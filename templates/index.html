@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packet Sniffing Challenge</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #00ff00;
+        }
+        .container {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,255,0,0.2);
+        }
+        .instructions {
+            background-color: #333;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 3px solid #00ff00;
+        }
+        .hint {
+            color: #888;
+            font-style: italic;
+        }
+        #flag-display {
+            font-family: monospace;
+            font-size: 1.2em;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .button {
+            background-color: #004400;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .tool-tip {
+            background-color: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        #status {
+            margin-top: 10px;
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕵️ Packet Sniffing Challenge</h1>
+        
+        <div class="instructions">
+            <h2>Mission Briefing:</h2>
+            <p>Welcome, Network Detective! Your mission, should you choose to accept it:</p>
+            
+            <ol>
+                <li>The flag has been split into segments</li>
+                <li>Each segment is hidden within the network traffic</li>
+                <li>Use your packet sniffing skills to find them!</li>
+            </ol>
+
+            <div class="tool-tip">
+                <h3>🔍 Recommended Tools:</h3>
+                <ul>
+                    <li>Browser Developer Tools (Network Tab)</li>
+                    <li>Wireshark</li>
+                    <li>Burp Suite</li>
+                    <li>Any packet analyzer of your choice</li>
+                </ul>
+            </div>
+
+            <div class="hint">
+                <h3>💡 Tips:</h3>
+                <ul>
+                    <li>Check response headers carefully</li>
+                    <li>Data might be encoded in different ways</li>
+                    <li>Look for patterns in the traffic</li>
+                    <li>Some headers might be decoys</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tool-tip">
+            <p>To start the challenge, send POST requests to:</p>
+            <code>/api/segment/0</code> through <code>/api/segment/N</code>
+        </div>
+
+        <div>
+            <button class="button" onclick="requestSegment()">Generate Traffic</button>
+            <button class="button" onclick="requestHint()">Request Hint</button>
+        </div>
+        <div id="status">Status: Ready to begin packet analysis...</div>
+    </div>
+
+    <script>
+        let currentSegment = 0;
+
+        async function requestSegment() {
+            try {
+                const response = await fetch(`/api/segment/${currentSegment}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    document.getElementById('status').textContent = 
+                        `Generated traffic for segment ${currentSegment}. Check your packet sniffer!`;
+                    currentSegment = (currentSegment + 1) % 5;  // Loop through segments
+                } else {
+                    document.getElementById('status').textContent = 'Error generating traffic';
+                }
+            } catch (error) {
+                document.getElementById('status').textContent = 'Network error occurred';
+            }
+        }
+
+        async function requestHint() {
+            try {
+                await fetch('/api/hint');
+                document.getElementById('status').textContent = 
+                    'Hint traffic generated. Check your packet analyzer!';
+            } catch (error) {
+                document.getElementById('status').textContent = 'Error requesting hint';
+            }
+        }
+
+        // Add some ASCII art to the console
+        console.log(`
+        ╔═══════════════════════════════════════╗
+        ║    PACKET SNIFFING CHALLENGE         ║
+        ║                                      ║
+        ║    The flag is in the packets...     ║
+        ║    Can you find it?                  ║
+        ║                                      ║
+        ║    🔍 Start sniffing!               ║
+        ╚═══════════════════════════════════════╝
+        `);
+    </script>
+</body>
+</html>
